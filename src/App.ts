@@ -5,6 +5,7 @@ import { msg, success } from "./Helpers/Logger"
 import { connect } from './Helpers/Database/Databse';
 
 const app = express()
+app.use(express.json())
 
 const port = 3001
 
@@ -17,7 +18,7 @@ const configServer = async () => {
 
     await connect()
     msg("Database connected")
-    
+
     app.listen(port, () => {
         msg("Server launched successfully");
     })
