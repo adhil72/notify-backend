@@ -1,20 +1,18 @@
-import { Db, MongoClient } from 'mongodb';
+import { Collection, Connection, connect as c, connection } from 'mongoose';
 import vars from '../env';
 
 const uri = `mongodb://localhost:27017`;
-const client = new MongoClient(uri);
 
-let configs: { db?: Db, status: boolean } = { status: false }
-
+let configs: { users?: Collection } = {}
 
 export function connect() {
     return new Promise((r, j) => {
-        client.connect().then(() => {
-            configs.db = client.db(vars.db)
+        c(uri).then(() => {
             r(200)
+            configs.users = connection.collection('users')
         }).catch((e) => {
             j(e)
         })
     })
 }
-
+export { configs }
