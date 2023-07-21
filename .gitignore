@@ -128,3 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+client.json
+
+src/Helpers/Gmail/credentials.json
+src/Helpers/Gmail/token.json

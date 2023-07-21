@@ -5,7 +5,9 @@ import { hashSync } from "bcryptjs"
 const userSchema = new Schema({
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, default: '' },
-    lastAccess: { type: String, required: true }
+    lastAccess: { type: String, required: true },
+    verified: { type: Boolean, required: true, default: false },
+    name: { type: String, default: 'user' }
 })
 
 const Auth = model('Auth', userSchema)
@@ -14,8 +16,6 @@ const findUser = async (email: string) => {
     let user = await Auth.findOne({ email })
     return user
 }
-
-
 
 const updatePassword = async (props: { id: string, password: string }) => {
     const user = await Auth.findById(props.id);
