@@ -16,6 +16,7 @@ router.post('/', async (req, res) => {
     search.lastAccess = ''
     res.send(search)
   } else {
+    req.body.verified = false
     let user = new Auth(req.body)
     user.save().then((d) => {
       if (d.password == '') {

@@ -3,6 +3,7 @@ import express from "express"
 import mapper from "./Helpers/Mapper"
 import { msg, success } from "./Helpers/Logger"
 import { connect } from './Helpers/Database/Databse';
+import { authorize } from './Helpers/Gmail/Gmail';
 
 const app = express()
 app.use(express.json())
@@ -17,6 +18,7 @@ const configServer = async () => {
     });
 
     await connect()
+    await authorize()
     msg("Database connected")
 
     app.listen(port, () => {
