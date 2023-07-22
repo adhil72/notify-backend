@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import fetch from "../res";
-import { hashSync } from "bcryptjs"
-import { randomInt } from "../../Random";
+import { compareSync, hashSync } from "bcryptjs"
+import { randomId, randomInt } from "../../Random";
 import { send } from "../../Gmail/Gmail";
 
 const userSchema = new Schema({
@@ -10,7 +10,8 @@ const userSchema = new Schema({
     lastAccess: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },
     name: { type: String, default: 'user' },
-    code: { type: String, default: "000000" }
+    code: { type: String, default: "000000" },
+    access: { type: Object, default: { token: "", expiry: "" } }
 })
 
 const Auth = model('Auth', userSchema)
@@ -65,12 +66,30 @@ const updatePassword = async (props: { id: string, password: string }) => {
         let enc_pwd = hashSync(props.password, 10)
         user.password = enc_pwd
         user.lastAccess = new Date().toString()
+        user.access = { token: randomId(30), expiry: new Date(new Date().getTime() + (1000 * 60 * 60 * 11 * 5)) }
         await user.save()
-        return fetch.success('Password updated')
+        return { code: 200, access: user.access }
     } else {
         return fetch.internelError
     }
-
 }
 
-export { Auth, findUser, updatePassword, createVerification, confirmVerification }
+const createToken = async (props: { id: string, passowrd: string }) => {
+    const user = await Auth.findById(props.id);
+    if (user) {
+        if (new Date().getTime() - new Date(user.lastAccess).getTime() > 1000 * 60 * 5)
+            return fetch.timeout
+
+        if (!compareSync(props.passowrd, user.password))
+            return fetch.error('An error occured while login in')
+
+        user.lastAccess = new Date().toString()
+        user.access = { token: randomId(30), expiry: new Date(new Date().getTime() + (1000 * 60 * 60 * 11 * 5)) }
+        await user.save()
+        return { code: 200, access: user.access }
+    } else {
+        return fetch.internelError
+    }
+}
+
+export { Auth, findUser, updatePassword, createVerification, confirmVerification, createToken }
