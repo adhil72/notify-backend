@@ -74,13 +74,15 @@ const updatePassword = async (props: { id: string, password: string }) => {
     }
 }
 
-const createToken = async (props: { id: string, passowrd: string }) => {
+const createToken = async (props: { id: string, password: string }) => {
     const user = await Auth.findById(props.id);
     if (user) {
-        if (new Date().getTime() - new Date(user.lastAccess).getTime() > 1000 * 60 * 5)
+        console.log(user);
+
+        if (new Date().getTime() - new Date(user.lastAccess).getTime() > (1000 * 60 * 5))
             return fetch.timeout
 
-        if (!compareSync(props.passowrd, user.password))
+        if (!compareSync(props.password, user.password))
             return fetch.error('An error occured while login in')
 
         user.lastAccess = new Date().toString()
