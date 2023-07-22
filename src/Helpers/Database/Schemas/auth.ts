@@ -63,6 +63,9 @@ const updatePassword = async (props: { id: string, password: string }) => {
         if (new Date().getTime() - new Date(user.lastAccess).getTime() > 1000 * 60 * 5)
             return fetch.timeout
 
+        if (user.password != '')
+            return fetch.error('password already exists')
+
         let enc_pwd = hashSync(props.password, 10)
         user.password = enc_pwd
         user.lastAccess = new Date().toString()
@@ -77,8 +80,6 @@ const updatePassword = async (props: { id: string, password: string }) => {
 const createToken = async (props: { id: string, password: string }) => {
     const user = await Auth.findById(props.id);
     if (user) {
-        console.log(user);
-
         if (new Date().getTime() - new Date(user.lastAccess).getTime() > (1000 * 60 * 5))
             return fetch.timeout
 

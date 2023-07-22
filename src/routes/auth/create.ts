@@ -8,25 +8,15 @@ router.post('/', async (req, res) => {
   let d = await findUser(req.body.email)
 
   if (d) {
-    if (d.password == '') {
-      d.password = "false"
-    } else {
-      d.password = "true"
-    }
     d.lastAccess = new Date().toString()
     await d.save()
-    res.send({ id: d._id, email: d.email, name: d.name, password: d.password, verified: d.verified })
+    res.send({ id: d._id, email: d.email, name: d.name, password: d.password == '' ? 'false' : 'true', verified: d.verified })
   } else {
     req.body.verified = false
     req.body.lastAccess = new Date().toString()
     let user = new Auth(req.body)
     user.save().then((d) => {
-      if (d.password == '') {
-        d.password = "false"
-      } else {
-        d.password = "true"
-      }
-      res.send({ id: d._id, email: d.email, name: d.name, password: d.password, verified: d.verified })
+      res.send({ id: d._id, email: d.email, name: d.name, password: d.password == '' ? 'false' : 'true', verified: d.verified })
     }).catch((w) => {
       if (w._message == 'Auth validation failed') {
         res.send(errorFilter(w))
