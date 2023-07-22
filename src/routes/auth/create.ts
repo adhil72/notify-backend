@@ -13,9 +13,12 @@ router.post('/', async (req, res) => {
     } else {
       d.password = "true"
     }
+    d.lastAccess = new Date().toString()
+    await d.save()
     res.send({ id: d._id, email: d.email, name: d.name, password: d.password, verified: d.verified })
   } else {
     req.body.verified = false
+    req.body.lastAccess = new Date().toString()
     let user = new Auth(req.body)
     user.save().then((d) => {
       if (d.password == '') {
