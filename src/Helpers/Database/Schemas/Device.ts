@@ -39,4 +39,17 @@ const validateAddToken = async ({ access, token, phone }: { access: object, toke
     }
 }
 
-export { validateAddToken, generateAddToken }
+const getAllDevice = async ({ access }: { access: object }) => {
+    let user = await Auth.findOne({ access })
+    if (user) {
+        if (validator(user.access)) {
+            return user.clients
+        } else {
+            return res.timeout
+        }
+    } else {
+        return res.internelError
+    }
+}
+
+export { validateAddToken, generateAddToken, getAllDevice }
