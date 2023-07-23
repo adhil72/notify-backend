@@ -5,27 +5,18 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   req.body.lastAccess = new Date().toString()
-  let search = await findUser(req.body.email)
+  let d = await findUser(req.body.email)
 
-  if (search) {
-    if (search.password == '') {
-      search.password = "false"
-    } else {
-      search.password = "true"
-    }
-    search.lastAccess = ''
-    res.send(search)
+  if (d) {
+    d.lastAccess = new Date().toString()
+    await d.save()
+    res.send({ id: d._id, email: d.email, name: d.name, password: d.password == '' ? 'false' : 'true', verified: d.verified })
   } else {
     req.body.verified = false
+    req.body.lastAccess = new Date().toString()
     let user = new Auth(req.body)
     user.save().then((d) => {
-      if (d.password == '') {
-        d.password = "false"
-      } else {
-        d.password = "true"
-      }
-      d.lastAccess = ''
-      res.send(d)
+      res.send({ id: d._id, email: d.email, name: d.name, password: d.password == '' ? 'false' : 'true', verified: d.verified })
     }).catch((w) => {
       if (w._message == 'Auth validation failed') {
         res.send(errorFilter(w))

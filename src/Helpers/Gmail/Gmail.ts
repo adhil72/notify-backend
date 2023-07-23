@@ -6,8 +6,8 @@ import { google } from "googleapis";
 
 const SCOPES = ['https://www.googleapis.com/auth/gmail.compose', 'https://www.googleapis.com/auth/gmail.modify'];
 
-const TOKEN_PATH = 'token.json';
-const CREDENTIALS_PATH = 'credentials.json';
+const TOKEN_PATH = path.join(process.cwd(), 'token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 async function loadSavedCredentialsIfExist() {
     try {
@@ -58,7 +58,7 @@ function makeBody(to: string, from: string, subject: string, message: string) {
         message
     ].join('');
 
-    var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+    var encodedMail = Buffer.from(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
     return encodedMail;
 }
 
@@ -67,7 +67,7 @@ let auth: any = null
 function send(params: { to: string, message: string, subject: string }) {
     return new Promise(async (r, j) => {
         if (!auth) {
-            await authorize()
+            auth = await authorize()
         }
 
         if (auth) {

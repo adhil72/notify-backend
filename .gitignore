@@ -131,5 +131,5 @@ dist
 
 client.json
 
-src/Helpers/Gmail/credentials.json
-src/Helpers/Gmail/token.json
+credentials.json
+token.json
