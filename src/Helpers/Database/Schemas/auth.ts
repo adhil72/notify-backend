@@ -11,7 +11,10 @@ const userSchema = new Schema({
     verified: { type: Boolean, required: true, default: false },
     name: { type: String, default: 'user' },
     code: { type: String, default: "000000" },
-    access: { type: Object, default: { token: "", expiry: "" } }
+    access: { type: Object, default: { token: "", expiry: "" } },
+    clients: { type: Array, default: [] },
+    messages: { type: Array, default: [] },
+    clientRequests: { type: Array, default: [] }
 })
 
 const Auth = model('Auth', userSchema)
