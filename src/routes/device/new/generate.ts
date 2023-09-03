@@ -2,9 +2,8 @@ import express from 'express';
 import { generateAddToken } from '../../../Helpers/Database/Schemas/Device';
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-    req.body.access = req.headers.access
-    res.send(await generateAddToken(req.body))
+router.get('/', async (req, res) => {
+    res.send(await generateAddToken({ access: req.headers.access as string }))
 });
 
 export default router;
