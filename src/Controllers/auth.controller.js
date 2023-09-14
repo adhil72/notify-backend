@@ -8,10 +8,9 @@ const userLoginController = async (body) => {
         let { email } = body
 
         let search = await userModel.findOne({ email })
-        search.lastAccess = new Date()
-        await search.save()
-
         if (search) {
+            search.lastAccess = new Date()
+            await search.save()
             if (await comparePassword(body.password, search.password)) {
                 return new Promise((r, j) => {
                     jwt.sign({ _id: search._id, email: search.email }, JwtSecret(), {}, (err, token) => {
