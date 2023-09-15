@@ -1,11 +1,10 @@
 import express from 'express';
-import { msg, success } from './Helpers/Logger.js';
+import {msg, success} from './Helpers/Logger.js';
 import cors from 'cors';
 import authorizationMiddleware from './Middlewares/Authorization.js';
 import * as env from './Helpers/env.js';
-import { connect } from './Helpers/Database.js';
+import {connect} from './Helpers/Database.js';
 import mapper from "./Helpers/Mapper.js";
-
 
 
 const app = express()
@@ -14,13 +13,14 @@ app.use(cors({allowedHeaders: "*", origin: "*"}))
 app.use(authorizationMiddleware)
 const port = 50000
 
-Object.keys(env).forEach((key)=>{
+Object.keys(env).forEach((key) => {
     env[key]
 })
 
 const configServer = async () => {
     const map = await mapper()
     map.forEach((router) => {
+        router.mode = router.mode.toLocaleLowerCase()
         if (router.mode === 'post') {
             success("Mapping : post " + '/' + router.path)
             app.post('/' + router.path, router.fun)
@@ -39,7 +39,7 @@ const configServer = async () => {
         }
     });
 
-    connect().then(()=>{
+    connect().then(() => {
         msg("Database connected")
         app.listen(port, () => {
             msg("Server launched successfully");
