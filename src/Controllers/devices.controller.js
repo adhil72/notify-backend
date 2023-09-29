@@ -1,9 +1,9 @@
-import {addDeviceRequestModel} from "../Models/devicesModel.js";
+import {addDeviceRequestModel, deviceModel} from "../Models/devicesModel.js";
 
 const addDeviceRequestController = async ({_id}) => {
     try {
-        let expiry = new Date().getTime() + 10*60*1000
-        let data = await new addDeviceRequestModel({userId: _id,expiry}).save()
+        let expiry = new Date().getTime() + 10 * 60 * 1000
+        let data = await new addDeviceRequestModel({userId: _id, expiry}).save()
         return data._id
     } catch (e) {
         throw e
@@ -17,7 +17,9 @@ const validateDeviceRequestController = async ({_id}) => {
             await addDeviceRequestModel.findByIdAndDelete(_id)
             throw new Error("request expired")
         } else {
-            //Add to devices model
+            await addDeviceRequestModel.findByIdAndDelete(_id)
+            return await new deviceModel({name: "smartphone name"}).save().then(() => "Device added" +
+                "")
         }
     } catch (e) {
         throw e

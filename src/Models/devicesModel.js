@@ -7,6 +7,12 @@ const addDeviceRequestSchema = new Schema({
     userId: {type: String, required: true}
 })
 
-const addDeviceRequestModel = new model("addDeviceRequests", addDeviceRequestSchema)
+const deviceSchema = new Schema({
+    _id: {type: String, default: uuidv4},
+    name: {type: String, required: true},
+    token: {type: String, default: ""}
+})
 
-export {addDeviceRequestModel}
+const addDeviceRequestModel = new model("addDeviceRequests", addDeviceRequestSchema)
+const deviceModel = new model("devices", deviceSchema)
+export {addDeviceRequestModel, deviceModel}
