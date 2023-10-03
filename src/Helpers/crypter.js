@@ -13,9 +13,10 @@ const hashPassword = async (password) => {
 // Function to compare a password with a hashed password
 const comparePassword = async (password, hashedPassword) => {
     try {
+        if (!password || password == '') throw new Error("email already exists")
         return await bcrypt.compare(password, hashedPassword);
     } catch (error) {
-        throw new Error('Error comparing passwords');
+        throw error;
     }
 };
 

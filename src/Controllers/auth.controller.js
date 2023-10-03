@@ -75,4 +75,14 @@ const updateUserNameController = async (body, { _id }) => {
     }
 }
 
-export { userLoginController, updatePasswordController, updateNameController, updateUserNameController }
+const getUserDataController = async ({ _id }) => {
+    try {
+        let data = await userModel.findById(_id)
+        data.password = ''
+        return data
+    } catch (error) {
+        throw error
+    }
+}
+
+export { userLoginController, updatePasswordController, updateNameController, updateUserNameController, getUserDataController }
