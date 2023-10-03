@@ -1,1 +1,1 @@
-export default ['/auth/login', '/auth/signup']
+export default ['/auth/login', '/auth/signup', '/devices/add/validate']
