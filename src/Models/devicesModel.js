@@ -16,6 +16,5 @@ const deviceSchema = new Schema({
     uid: { type: String, required: true }
 })
 
-const addDeviceRequestModel = new model("addDeviceRequests", addDeviceRequestSchema)
-const deviceModel = new model("devices", deviceSchema)
-export { addDeviceRequestModel, deviceModel }
+export const addDeviceRequestModel = model("addDeviceRequests", addDeviceRequestSchema)
+export const deviceModel = model("devices", deviceSchema)

@@ -37,7 +37,6 @@ const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
             return { _id: idSearch._id }
         }
     } catch (e) {
-        console.log(e);
         throw e
     }
 }
@@ -45,10 +44,14 @@ const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
 const sendMessageController = async ({ message, to }, { _id }) => {
     try {
         let device = await deviceModel.find({ user: _id })
-        let messages = await messagesModel.find({ _id })
+        let messages = await messagesModel.find({ user: _id })
         if (messages.length > 20) messagesModel.findOneAndDelete({ user: _id })
-        await sendFcm({ token: device[0].token, data: { message, to } })
-        return await new messagesModel({ message, user, to }).save()
+        await sendFcm({ token: device[0].token, data: { message, to } });
+        let user = await userModel.findById(_id);
+        if (new Date(user.messagesSendToday.lastUpdated).getDate() === new Date().getDate()) user.messagesSendToday.count = user.messagesSendToday.count + 1
+        if (new Date(user.messagesSendMonth.lastUpdated).getMonth() === new Date().getMonth()) user.messagesSendMonth.count = user.messagesSendMonth.count + 1
+        await user.save()
+        return await new messagesModel({ message, user: _id, to }).save()
     } catch (error) {
         throw error
     }
