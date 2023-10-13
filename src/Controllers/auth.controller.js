@@ -2,6 +2,7 @@ import { userModel } from "../Models/usersModel.js";
 import jwt from "jsonwebtoken";
 import { JwtSecret } from "../Helpers/env.js";
 import { comparePassword, hashPassword } from "../Helpers/crypter.js";
+import { deviceModel } from "../Models/devicesModel.js";
 
 const userLoginController = async (body) => {
     try {
@@ -22,7 +23,7 @@ const userLoginController = async (body) => {
                 throw new Error("Login error")
             }
         } else {
-            let user = await new userModel({ email }).save()
+            let user = await new userModel({ email, messagesSendMonth: { count: 0, lastUpdated: new Date() }, messagesSendToday: { count: 0, lastUpdated: new Date() } }).save()
             return new Promise((r, j) => {
                 jwt.sign({ _id: user._id, email: user.email }, JwtSecret(), {}, (err, token) => {
                     if (err) return j(err)
@@ -78,8 +79,8 @@ const updateUserNameController = async (body, { _id }) => {
 const getUserDataController = async ({ _id }) => {
     try {
         let data = await userModel.findById(_id)
-        data.password = ''
-        return data
+        delete data.password
+        return { ...data._doc, clients: (await deviceModel.find({ user: _id })).length }
     } catch (error) {
         throw error
     }

@@ -7,7 +7,9 @@ const userSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, default: 'initial' },
     name: { type: String, default: 'user' },
-    lastAccess: { type: Date, default: Date.now }
+    lastAccess: { type: Date, default: Date.now },
+    messagesSendToday: { type: new Schema({ count: { type: Number, default: 0 }, lastUpdated: { type: Date, default: Date.now } }) },
+    messagesSendMonth: { type: new Schema({ count: { type: Number, default: 0 }, lastUpdated: { type: Date, default: Date.now } }) }
 })
 
 const userModel = model('users', userSchema)
