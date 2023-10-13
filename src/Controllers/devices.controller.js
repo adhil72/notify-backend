@@ -1,4 +1,6 @@
+import { sendFcm } from "../Helpers/Fcm.js";
 import { addDeviceRequestModel, deviceModel } from "../Models/devicesModel.js";
+import { messagesModel } from "../Models/messagesModel.js";
 import { userModel } from "../Models/usersModel.js";
 
 const addDeviceRequestController = async ({ _id }) => {
@@ -40,4 +42,24 @@ const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
     }
 }
 
-export { addDeviceRequestController, validateDeviceRequestController, getAllDeviceController }
+const sendMessageController = async ({ message, to }, { _id }) => {
+    try {
+        let device = await deviceModel.find({ user: _id })
+        let messages = await messagesModel.find({ _id })
+        if (messages.length > 20) messagesModel.findOneAndDelete({ user: _id })
+        await sendFcm({ token: device[0].token, data: { message, to } })
+        return await new messagesModel({ message, user, to }).save()
+    } catch (error) {
+        throw error
+    }
+}
+
+const getMessagesController = async ({ _id }) => {
+    try {
+        return await messagesModel.find({ user: _id })
+    } catch (error) {
+        throw error
+    }
+}
+
+export { addDeviceRequestController, validateDeviceRequestController, getAllDeviceController, sendMessageController, getMessagesController }
