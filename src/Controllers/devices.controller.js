@@ -2,8 +2,9 @@ import { sendFcm } from "../Helpers/Fcm.js";
 import { addDeviceRequestModel, deviceModel } from "../Models/devicesModel.js";
 import { messagesModel } from "../Models/messagesModel.js";
 import { userModel } from "../Models/usersModel.js";
+import { sign } from "../Helpers/jwt.js"
 
-const addDeviceRequestController = async ({ _id }) => {
+export const addDeviceRequestController = async ({ _id }) => {
     try {
         let expiry = new Date().getTime() + 10 * 60 * 1000
         let data = await new addDeviceRequestModel({ userId: _id, expiry }).save()
@@ -13,7 +14,7 @@ const addDeviceRequestController = async ({ _id }) => {
     }
 }
 
-const getAllDeviceController = async ({ _id }) => {
+export const getAllDeviceController = async ({ _id }) => {
     try {
         return await deviceModel.find({ user: _id })
     } catch (error) {
@@ -21,7 +22,7 @@ const getAllDeviceController = async ({ _id }) => {
     }
 }
 
-const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
+export const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
     try {
         let request = await addDeviceRequestModel.findById(_id)
         if (!request) return new Error("Invalid request")
@@ -31,17 +32,17 @@ const validateDeviceRequestController = async ({ _id, name, token, uid }) => {
             throw new Error("request expired")
         } else {
             await addDeviceRequestModel.findByIdAndDelete(_id)
-            let idSearch = await deviceModel.findOne({ uid })
-            if (idSearch) return { _id: idSearch._id }
-            idSearch = await new deviceModel({ name, token, user: request.userId, uid }).save()
-            return { _id: idSearch._id }
+            await deviceModel.findOneAndDelete({ uid })
+            let deviceData = await new deviceModel({ name, token, user: request.userId, uid }).save()
+            let jwtToken = await sign({ _id: deviceData._id, user: deviceData.user })
+            return { _id: deviceData._id, token: jwtToken }
         }
     } catch (e) {
         throw e
     }
 }
 
-const sendMessageController = async ({ message, to }, { _id }) => {
+export const sendMessageController = async ({ message, to }, { _id }) => {
     try {
         let device = await deviceModel.find({ user: _id })
         let messages = await messagesModel.find({ user: _id })
@@ -57,7 +58,7 @@ const sendMessageController = async ({ message, to }, { _id }) => {
     }
 }
 
-const getMessagesController = async ({ _id }) => {
+export const getMessagesController = async ({ _id }) => {
     try {
         return await messagesModel.find({ user: _id })
     } catch (error) {
@@ -65,4 +66,17 @@ const getMessagesController = async ({ _id }) => {
     }
 }
 
-export { addDeviceRequestController, validateDeviceRequestController, getAllDeviceController, sendMessageController, getMessagesController }
+export const updateMessagesController = async ({ token }, { _id, user }) => {
+    try {
+        await deviceModel.findByIdAndUpdate(_id, { token })
+        return {}
+    } catch (error) {
+        throw error
+    }
+}
+
+export const disconnectDeviceController = async ({ _id, user }) => {
+    await deviceModel.findByIdAndDelete(_id)
+    return { message: "disconnected" }
+}
+

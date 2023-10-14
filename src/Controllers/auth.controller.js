@@ -76,11 +76,17 @@ const updateUserNameController = async (body, { _id }) => {
     }
 }
 
-const getUserDataController = async ({ _id }) => {
+const getUserDataController = async ({ _id, user }) => {
     try {
-        let data = await userModel.findById(_id)
+        let data
+        if (!user) {
+            data = await userModel.findById(_id)
+        } else {
+            data = await userModel.findById(user)
+        }
         delete data.password
-        return { ...data._doc, clients: (await deviceModel.find({ user: _id })).length }
+        delete data._id
+        return { ...data._doc, clients: (await deviceModel.find({ user: user ? user : _id })).length }
     } catch (error) {
         throw error
     }
