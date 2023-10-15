@@ -11,7 +11,7 @@ const app = express()
 app.use(express.json())
 app.use(cors({allowedHeaders: "*", origin: "*"}))
 app.use(authorizationMiddleware)
-const port = 50000
+const port = process.env.PORT
 
 Object.keys(env).forEach((key) => {
     env[key]
