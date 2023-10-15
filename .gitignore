@@ -2,3 +2,4 @@ node_modules
 test.js
 firebase-admin.json
 .env
+.envt
