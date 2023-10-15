@@ -1,4 +1,6 @@
 import admin from "firebase-admin"
+
+const getEnvValue = (key) => process.env[key]
 var serviceAccount = {
     "type": getEnvValue("TYPE"),
     "project_id": getEnvValue("PROJECT_ID"),
@@ -12,8 +14,6 @@ var serviceAccount = {
     "client_x509_cert_url": getEnvValue("CLIENT_X509_CERT_URL"),
     "universe_domain": getEnvValue("UNIVERSE_DOMAIN")
 }
-
-const getEnvValue = (key) => process.env[key]
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
