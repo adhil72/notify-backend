@@ -92,4 +92,14 @@ const getUserDataController = async ({ _id, user }) => {
     }
 }
 
-export { userLoginController, updatePasswordController, updateNameController, updateUserNameController, getUserDataController }
+const generateAuthToken = async (user) => {
+    let search = await userModel.findById(user)
+    return new Promise((r, j) => {
+        jwt.sign({ _id: search._id, email: search.email }, JwtSecret(), {}, (err, token) => {
+            if (err) return j(err)
+            return r(token)
+        })
+    })
+}
+
+export { userLoginController, updatePasswordController, updateNameController, updateUserNameController, getUserDataController, generateAuthToken }
