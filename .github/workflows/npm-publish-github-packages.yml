@@ -1,0 +1,32 @@
+name: Deploy Node.js project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile TypeScript
+        run: npm run build
+
+      - name: Deploy
+        run: |
+          # Add your deployment script here
+          # For example, you can use scp to copy files to a server
+          # Or use any deployment service's CLI tool to deploy your project
+          echo "Deployment step"
